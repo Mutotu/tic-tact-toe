@@ -1,96 +1,112 @@
-////state vars
+function main() {
+  ////state vars
 
-const state = [0, 0, 0, 0, 0, 0, 0, 0, 0];
-const rows = document.querySelectorAll(".row");
-const winner = document.querySelector(".winner");
-const players = {
-  X: "X",
-  O: "O",
-};
-let player = players.X;
-let won = false;
-function playerOrder() {
-  if (player === "X") player = players.O;
-  else player = players.X;
-}
-///
-function declareWinner() {
-  winner.innerHTML = player + " is winner.....";
-  won = true;
-}
-///////////////
-const disableAfterWin = () => {
-  if (won) {
+  const bt = document.querySelector(".button");
+  const rows = document.querySelectorAll(".row");
+  const winner = document.querySelector(".winner");
+
+  //
+  const state = [0, 0, 0, 0, 0, 0, 0, 0, 0];
+  const players = {
+    X: "X",
+    O: "O",
+  };
+  let player = players.X;
+  let won = false;
+  const playerOrder = () => {
+    if (player === "X") player = players.O;
+    else player = players.X;
+  };
+  ///
+  //////////work in progress
+  const refresh = () => {
+    bt.addEventListener("click", (e) => {
+      console.log(e);
+      action();
+    });
+  };
+  refresh();
+  const restartBtn = () => {
+    const button = document.createElement("button");
+    button.innerText = "Restart";
+    bt.append(button);
+  };
+
+  const declareWinner = () => {
+    winner.innerHTML = player + " is winner.....";
+    won = true;
+  };
+  ///////////////
+
+  const disabler = () => {
     [...rows].forEach((row) => {
-      console.log(row);
       row.classList.add("disabled");
     });
-  }
-};
+  };
 
-const checkWInner = () => {
-  for (let i = 0; i < state.length; i++) {
+  const disableAfterWin = () => {
+    if (won) {
+      disabler();
+      restartBtn();
+    } else {
+      let counter = 0;
+      for (let i of state) {
+        if (i === 0) counter++;
+      }
+      if (counter < 2) {
+        winner.innerHTML = "No winner";
+        disabler();
+        restartBtn();
+      }
+    }
+  };
+
+  const checkWInner = () => {
     if (
       //rows
-      (state[i] === player &&
-        state[i + 1] === player &&
-        state[i + 2] === player) ||
-      (state[i + 3] === player &&
-        state[i + 4] === player &&
-        state[i + 5] === player) ||
-      (state[i + 6] === player &&
-        state[i + 7] === player &&
-        state[i + 8] === player)
+      (state[0] === player && state[1] === player && state[2] === player) ||
+      (state[3] === player && state[4] === player && state[5] === player) ||
+      (state[6] === player && state[7] === player && state[8] === player)
     ) {
       console.log(player, "is winner");
       declareWinner();
       // columns
     } else if (
-      (state[i] === player &&
-        state[i + 3] === player &&
-        state[i + 6] === player) ||
-      (state[i + 1] === player &&
-        state[i + 4] === player &&
-        state[i + 7] === player) ||
-      (state[i + 2] === player &&
-        state[i + 5] === player &&
-        state[i + 8] === player)
+      (state[0] === player && state[3] === player && state[6] === player) ||
+      (state[1] === player && state[4] === player && state[7] === player) ||
+      (state[2] === player && state[5] === player && state[8] === player)
     ) {
       console.log(player, "is winner");
       declareWinner();
       //diagonals
     } else if (
-      (state[i] === player &&
-        state[i + 4] === player &&
-        state[i + 8] === player) ||
-      (state[i + 2] === player &&
-        state[i + 4] === player &&
-        state[i + 6] === player) ||
-      (state[i + 2] === player &&
-        state[i + 5] === player &&
-        state[i + 8] === player)
+      (state[0] === player && state[4] === player && state[8] === player) ||
+      (state[2] === player && state[4] === player && state[6] === player) ||
+      (state[2] === player && state[5] === player && state[8] === player)
     ) {
       console.log(player, "is winner");
       declareWinner();
     }
-  }
-};
+  };
 
-const action = () => {
-  [...rows].forEach((row) =>
-    row.addEventListener("click", (e) => {
-      playerOrder();
-      e.target.innerText = player;
+  const fillHtml = (e) => {
+    e.target.innerText = player;
+    state[Number(e.target.id)] = player;
+    e.target.classList.add("disabled");
+  };
 
-      state[Number(e.target.id)] = player;
-      console.log(e.target);
-      e.target.classList.add("disabled");
+  const action = () => {
+    [...rows].forEach((row) =>
+      row.addEventListener("click", (e) => {
+        playerOrder();
+        fillHtml(e);
 
-      console.log(state);
-      checkWInner();
-      disableAfterWin();
-    })
-  );
-};
+        checkWInner();
+        disableAfterWin();
+      })
+    );
+  };
 
-action();
+  action();
+}
+main();

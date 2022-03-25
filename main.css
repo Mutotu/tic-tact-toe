@@ -25,3 +25,7 @@
 .disabled {
   pointer-events: none;
 }
+
+.winner {
+  margin-top: 10px;
+}
