@@ -1,7 +1,7 @@
 function main() {
   ////state vars
 
-  const bt = document.querySelector(".button");
+  const bt = document.querySelector(".restart");
   const rows = document.querySelectorAll(".row");
   const winner = document.querySelector(".winner");
 
@@ -18,18 +18,22 @@ function main() {
     else player = players.X;
   };
   ///
-  //////////work in progress
+
   const refresh = () => {
-    bt.addEventListener("click", (e) => {
-      console.log(e);
-      action();
-    });
+    bt.addEventListener("click", restartGame);
   };
-  refresh();
-  const restartBtn = () => {
-    const button = document.createElement("button");
-    button.innerText = "Restart";
-    bt.append(button);
+
+  const restartGame = () => {
+    [...rows].forEach((row) => {
+      row.classList.remove("disabled");
+    });
+    won = false;
+    winner.innerHTML = "";
+    for (i = 0; i < [...rows].length; i++) {
+      [...rows][i].innerHTML = null;
+      state[i] = 0;
+    }
+    bt.style.opacity = 0;
   };
 
   const declareWinner = () => {
@@ -47,7 +51,8 @@ function main() {
   const disableAfterWin = () => {
     if (won) {
       disabler();
-      restartBtn();
+      // restartBtn()
+      if (won) bt.style.opacity = 1;
     } else {
       let counter = 0;
       for (let i of state) {
@@ -55,8 +60,9 @@ function main() {
       }
       if (counter < 2) {
         winner.innerHTML = "No winner";
+        bt.style.opacity = 1;
         disabler();
-        restartBtn();
+        // restartBtn();
       }
     }
   };
@@ -106,7 +112,7 @@ function main() {
       })
     );
   };
-
+  refresh();
   action();
 }
 main();
