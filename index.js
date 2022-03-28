@@ -145,6 +145,7 @@ function main() {
   const rows = document.querySelectorAll(".row");
   const winner = document.querySelector(".winner");
   const trackingTurns = document.querySelector(".tracking");
+  const body = document.querySelector("body");
 
   //
   const state = [0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -156,6 +157,15 @@ function main() {
   let onPlay = false;
   let player = null;
   let won = false;
+
+  const turnDisplay = () => {
+    trackingTurns.innerHTML = onPlay ? "O's turn" : "X's turn";
+  };
+  const disableWholePAge = () => {
+    onPlay
+      ? body.classList.add("disableClick")
+      : body.classList.remove("disableClick");
+  };
   const playerOrder = () => {
     if (player === "X") player = players.O;
     else player = players.X;
@@ -168,19 +178,19 @@ function main() {
       if (state[i] === 0) {
         temp.push(i);
       }
-
-      // break;
     }
     if (onPlay) {
-      onPlay = true;
       let random = Math.floor(Math.random() * temp.length);
+      let randomTemp = temp[random];
+      [...rows][randomTemp].innerHTML = "O";
 
-      [...rows][random].innerHTML = "O";
-      state[random] = "O";
-      trackingTurns.innerHTML = "O's turn";
+      state[randomTemp] = "O";
+
+      onPlay = false;
+      turnDisplay();
     }
     temp = [];
-    onPlay = false;
+
     checkWInner();
   };
 
@@ -216,7 +226,7 @@ function main() {
   const disableAfterWin = () => {
     if (won) {
       disabler();
-
+      onPlay = false;
       if (won) bt.style.opacity = 1;
     } else {
       let counter = 0;
@@ -227,11 +237,13 @@ function main() {
         winner.innerHTML = "No winner";
         bt.style.opacity = 1;
         disabler();
+        onPlay = false;
       }
     }
   };
 
   const checkWInner = () => {
+    clearTimeout(timer);
     if (
       //rows
       (state[0] === player && state[1] === player && state[2] === player) ||
@@ -257,7 +269,8 @@ function main() {
     timer();
   };
   const timer = () => {
-    setTimeout(() => auto(), 800);
+    disableWholePAge();
+    setTimeout(() => auto(), 1000);
   };
   const fillHtml = (e) => {
     e.target.innerText = "X";
@@ -266,9 +279,7 @@ function main() {
   };
 
   const action = () => {
-    //
-
-    trackingTurns.innerHTML = `${players.X}'s turn`;
+    checkWInner();
     [...rows].forEach((row) =>
       row.addEventListener("click", (e) => {
         playerOrder();
@@ -276,10 +287,11 @@ function main() {
         onPlay = true;
         checkWInner();
         disableAfterWin();
+        turnDisplay();
       })
     );
   };
-
+  checkWInner();
   refresh();
   action();
 }
